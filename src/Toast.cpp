@@ -1641,13 +1641,13 @@ void Toast::setupUI()
         // Move icon
         m_iconWidget->move(m_margins.left() + m_iconSectionMargins.left()+ m_iconMargins.left(),
             m_margins.top() + m_iconSectionMargins.top() + m_iconMargins.top()
-            + ceil(heightIconSectionHeightDifference / 2) + floor(forcedReducedHeight / 2));
+            + ceil(heightIconSectionHeightDifference / 2) - floor(forcedReducedHeight / 2));
 
         // Move and resize icon separator
         m_iconSeparator->setFixedHeight(textSectionHeight);
         m_iconSeparator->move(m_margins.left() + m_iconSectionMargins.left() + m_iconMargins.left()
             + m_iconWidget->width() + m_iconMargins.right(), m_margins.top() + m_iconSectionMargins.top()
-            + ceil(forcedAdditionalHeight / 2) + floor(forcedReducedHeight / 2));
+            + ceil(forcedAdditionalHeight / 2) - floor(forcedReducedHeight / 2));
     }
     else
     {
