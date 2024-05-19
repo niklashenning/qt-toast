@@ -1455,16 +1455,160 @@ void Toast::setupUI()
     int forcedReducedHeight = 0;
 
     // Handle width greater than maximum width
-    // todo
+    if (width > maximumWidth())
+    {
+        // Enable line break for title and text and recalculate size
+        int newTitleWidth = std::max(titleWidth, textWidth) - (width - maximumWidth());
+        if (newTitleWidth > 0)
+        {
+            titleWidth = newTitleWidth;
+        }
+
+        int newTextWidth = std::max(titleWidth, textWidth) - (width - maximumWidth());
+        if (newTextWidth > 0)
+        {
+            textWidth = newTextWidth;
+        }
+
+        m_titleLabel->setMinimumWidth(titleWidth);
+        m_titleLabel->setWordWrap(true);
+        if (m_title != "")
+        {
+            titleHeight = m_titleLabel->sizeHint().height();
+        }
+        m_titleLabel->setFixedSize(titleWidth, titleHeight);
+
+        m_textLabel->setMinimumWidth(textWidth);
+        m_textLabel->setWordWrap(true);
+        if (m_text != "")
+        {
+            textHeight = m_textLabel->sizeHint().height();
+        }
+        m_textLabel->setFixedSize(textWidth, textHeight);
+
+        // Recalculate width and height
+        width = maximumWidth();
+
+        textSectionHeight = m_textSectionMargins.top() + titleHeight
+            + textSectionSpacing + textHeight + m_textSectionMargins.bottom();
+
+        height = m_margins.top() + std::max({iconSectionHeight, textSectionHeight,
+            closeButtonSectionHeight}) + m_margins.bottom() + durationBarHeight;
+    }
 
     // Handle height less than minimum height
-    // todo
+    if (height < minimumHeight())
+    {
+        // Enable word wrap for title and text labels
+        m_titleLabel->setWordWrap(true);
+        m_textLabel->setWordWrap(true);
+
+        // Calculate height with initial label width
+        titleWidth = m_titleLabel->fontMetrics().boundingRect(QRect(0, 0, 0, 0),
+            Qt::TextFlag::TextWordWrap, m_titleLabel->text()).width();
+
+        textWidth = m_textLabel->fontMetrics().boundingRect(QRect(0, 0, 0, 0),
+            Qt::TextFlag::TextWordWrap, m_textLabel->text()).width();
+
+        int tempWidth = std::max(titleWidth, textWidth);
+
+        titleWidth = m_titleLabel->fontMetrics().boundingRect(QRect(0, 0, tempWidth, 0),
+            Qt::TextFlag::TextWordWrap, m_titleLabel->text()).width();
+        if (m_title != "")
+        {
+            titleHeight = m_titleLabel->fontMetrics().boundingRect(QRect(0, 0, tempWidth, 0),
+                Qt::TextFlag::TextWordWrap, m_titleLabel->text()).height();
+        }
+
+        textWidth = m_textLabel->fontMetrics().boundingRect(QRect(0, 0, tempWidth, 0),
+            Qt::TextFlag::TextWordWrap, m_textLabel->text()).width();
+        if (m_text != "")
+        {
+            textHeight = m_textLabel->fontMetrics().boundingRect(QRect(0, 0, tempWidth, 0),
+                Qt::TextFlag::TextWordWrap, m_textLabel->text()).height();
+        }
+
+        textSectionHeight = m_textSectionMargins.top() + titleHeight
+            + textSectionSpacing + textHeight + m_textSectionMargins.bottom();
+        
+        height = m_margins.top() + std::max({ iconSectionHeight, textSectionHeight,
+            closeButtonSectionHeight }) + m_margins.bottom() + durationBarHeight;
+
+        while (tempWidth <= width)
+        {
+            // Recalculate height with different text widths to find optimal value
+            int tempTitleWidth = m_titleLabel->fontMetrics().boundingRect(QRect(0, 0, tempWidth, 0),
+                Qt::TextFlag::TextWordWrap, m_titleLabel->text()).width();
+
+            int tempTitleHeight = m_titleLabel->fontMetrics().boundingRect(QRect(0, 0, tempWidth, 0),
+                Qt::TextFlag::TextWordWrap, m_titleLabel->text()).height();
+
+            int tempTextWidth = m_textLabel->fontMetrics().boundingRect(QRect(0, 0, tempWidth, 0),
+                Qt::TextFlag::TextWordWrap, m_textLabel->text()).width();
+
+            int tempTextHeight = m_textLabel->fontMetrics().boundingRect(QRect(0, 0, tempWidth, 0),
+                Qt::TextFlag::TextWordWrap, m_textLabel->text()).height();
+
+            if (m_title == "")
+            {
+                tempTitleHeight = 0;
+            }
+
+            if (m_text == "")
+            {
+                tempTextHeight = 0;
+            }
+
+            int tempTextSectionHeight = m_textSectionMargins.top() + tempTitleHeight
+                + textSectionSpacing + tempTextHeight + m_textSectionMargins.bottom();
+
+            int tempHeight = m_margins.top() + std::max({ iconSectionHeight, tempTextSectionHeight,
+            closeButtonSectionHeight }) + m_margins.bottom() + durationBarHeight;
+
+            // Store values if calculated height is greater than or equal to min height
+            if (tempHeight >= minimumHeight())
+            {
+                titleWidth = tempTitleWidth;
+                titleHeight = tempTitleHeight;
+                textWidth = tempTextWidth;
+                textHeight = tempTextHeight;
+                textSectionHeight = tempTextSectionHeight;
+                height = tempHeight;
+                tempWidth += 1;
+            }
+            else
+            {
+                // Exit loop if calculated height is less than min height
+                break;
+            }
+        }
+
+        // Recalculate width
+        width = m_margins.left() + iconSectionWidth + m_textSectionMargins.left()
+            + std::max(titleWidth, textWidth) + m_textSectionMargins.right()
+            + closeButtonMargins.left() + closeButtonWidth
+            + closeButtonMargins.right() + m_margins.right();
+
+        // If min height not met, set height to min height
+        if (height < minimumHeight())
+        {
+            forcedAdditionalHeight = minimumHeight() - height;
+            height = minimumHeight();
+        }
+    }
 
     // Handle width less than minimum width
-    // todo
+    if (width < minimumWidth())
+    {
+        width = minimumWidth();
+    }
 
     // Handle height greater than maximum height
-    // todo
+    if (height > maximumHeight())
+    {
+        forcedReducedHeight = height - maximumHeight();
+        height = maximumHeight();
+    }
 
     // Calculate width and height including space for drop shadow
     int totalWidth = width + sc_dropShadowSize * 2;
