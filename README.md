@@ -2,6 +2,16 @@
 
 C++ port of the [pyqttoast](https://github.com/niklashenning/pyqttoast) library (v1.2.0) - a fully customizable and modern toast notification library for Qt
 
+![qt-toast](https://github.com/niklashenning/pyqt-toast/assets/58544929/c104f10e-08df-4665-98d8-3785822a20dc)
+
+
+## Features
+* Supports showing multiple toasts at the same time
+* Supports queueing of toasts
+* Supports 7 different positions
+* Supports multiple screens
+* Modern and fully customizable UI
+
 
 ## Usage
 
@@ -34,7 +44,6 @@ class Window : public QMainWindow
 
 public:
     Window(QWidget* parent = nullptr);
-    ~Window();
 
 private slots:
     void showToast();
