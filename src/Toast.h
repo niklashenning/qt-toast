@@ -158,7 +158,7 @@ private slots:
     void hide_();
     void fadeOut();
     void updateDurationBar();
-    static void showNextInQueue();
+    void deleteAndShowNextInQueue();
 
 private:
     static int s_maximumOnScreen;
@@ -207,6 +207,7 @@ private:
     int m_elapsedTime;
     bool m_fadingOut;
     bool m_used;
+    QWidget* m_parent;
     QLabel* m_notification;
     QWidget* m_dropShadowLayer1;
     QWidget* m_dropShadowLayer2;
@@ -224,7 +225,6 @@ private:
     QWidget* m_durationBarChunk;
     QTimer* m_durationTimer;
     QTimer* m_durationBarTimer;
-    QWidget* m_parent;
 
     void setupUI();
     void updatePositionXY();
@@ -238,6 +238,7 @@ private:
     static void updateCurrentlyShowingPositionXY();
     static void updateCurrentlyShowingPositionX();
     static void updateCurrentlyShowingPositionY();
+    static void showNextInQueue();
 
     static const int sc_updatePositionDuration;
     static const int sc_durationBarUpdateInterval;

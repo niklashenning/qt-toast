@@ -1,14 +1,15 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QFormLayout>
-#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QFormLayout>
+#include <QtWidgets/QGroupBox>
 #include "../src/Toast.h"
 
 

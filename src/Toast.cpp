@@ -81,7 +81,7 @@ Toast::Toast(QWidget* parent)
     setAttribute(Qt::WidgetAttribute::WA_TranslucentBackground);
     setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
-    // Notification widget(QLabel because QWidget has weird behaviour with stylesheets)
+    // Notification widget (QLabel because QWidget has weird behaviour with stylesheets)
     m_notification = new QLabel(this);
 
     // Drop shadow (has to be drawn manually since only one graphics effect can be applied)
@@ -101,7 +101,7 @@ Toast::Toast(QWidget* parent)
     m_opacityEffect->setOpacity(1);
     setGraphicsEffect(m_opacityEffect);
 
-    //Close button
+    // Close button
     m_closeButton = new QPushButton(m_notification);
     m_closeButton->setCursor(Qt::CursorShape::PointingHandCursor);
     m_closeButton->setObjectName("toast-close-button");
@@ -166,8 +166,7 @@ Toast::Toast(QWidget* parent)
     // Apply stylesheet
     QFile file("./src/css/toast.css");
     file.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(file.readAll());
-    setStyleSheet(styleSheet);
+    setStyleSheet(file.readAll());
 }
 
 Toast::~Toast()
@@ -1252,7 +1251,7 @@ void Toast::show()
             QPropertyAnimation* posAnimation = new QPropertyAnimation(this, "pos");
             posAnimation->setEndValue(QPoint(position.x(), position.y()));
             posAnimation->setDuration(m_fadeInDuration);
-            posAnimation->start();
+            posAnimation->start(QAbstractAnimation::DeleteWhenStopped);
         }
         else
         {
@@ -1265,7 +1264,7 @@ void Toast::show()
         fadeInAnimation->setDuration(m_fadeInDuration);
         fadeInAnimation->setStartValue(0);
         fadeInAnimation->setEndValue(1);
-        fadeInAnimation->start();
+        fadeInAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
         // Make sure title bar of parent is not grayed out
         if (m_parent)
@@ -1321,10 +1320,7 @@ void Toast::hide_()
             }
 
             // Show next item from queue after updating
-            QTimer* timer = new QTimer(this);
-            timer->setSingleShot(true);
-            connect(timer, SIGNAL(timeout()), this, SLOT(showNextInQueue()));
-            timer->start();
+            QTimer::singleShot(m_fadeInDuration, this, SLOT(deleteAndShowNextInQueue()));
             
             break;
         };
@@ -1372,7 +1368,7 @@ void Toast::fadeOut()
     fadeOutAnimation->setStartValue(1);
     fadeOutAnimation->setEndValue(0);
     connect(fadeOutAnimation, SIGNAL(finished()), this, SLOT(hide_()));
-    fadeOutAnimation->start();
+    fadeOutAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void Toast::updateDurationBar()
@@ -1408,10 +1404,12 @@ void Toast::setupUI()
     QFontMetrics* titleFontMetrics = new QFontMetrics(m_titleFont);
     int titleWidth = titleFontMetrics->boundingRect(m_title).width() + 1;
     int titleHeight = titleFontMetrics->boundingRect(m_title).height();
+    delete titleFontMetrics;
 
     QFontMetrics* textFontMetrics = new QFontMetrics(m_textFont);
     int textWidth = textFontMetrics->boundingRect(m_text).width() + 1;
     int textHeight = textFontMetrics->boundingRect(m_text).height();
+    delete textFontMetrics;
 
     int textSectionSpacing = m_title == "" || m_text == "" ? 0 : m_textSectionSpacing;
 
@@ -1807,8 +1805,8 @@ QPoint Toast::calculatePosition()
     }
     else if (s_position == ToastPosition::BOTTOM_MIDDLE)
     {
-        x = (int)currentScreen->geometry().x()
-            + currentScreen->geometry().width() / 2 - m_notification->width() / 2;
+        x = (int)(currentScreen->geometry().x()
+            + currentScreen->geometry().width() / 2 - m_notification->width() / 2);
         y = currentScreen->geometry().height() - m_notification->height()
             - s_offsetY + currentScreen->geometry().y() - offsetY;
     }
@@ -1825,16 +1823,16 @@ QPoint Toast::calculatePosition()
     }
     else if (s_position == ToastPosition::TOP_MIDDLE)
     {
-        x = (int)currentScreen->geometry().x()
-            + currentScreen->geometry().width() / 2 - m_notification->width() / 2;
+        x = (int)(currentScreen->geometry().x()
+            + currentScreen->geometry().width() / 2 - m_notification->width() / 2);
         y = currentScreen->geometry().y() + s_offsetY + offsetY;
     }
     else if (s_position == ToastPosition::CENTER)
     {
-        x = (int)currentScreen->geometry().x()
-            + currentScreen->geometry().width() / 2 - m_notification->width() / 2;
-        y = (int)currentScreen->geometry().y() + currentScreen->geometry().height() / 2
-            - m_notification->height() / 2 + offsetY;
+        x = (int)(currentScreen->geometry().x()
+            + currentScreen->geometry().width() / 2 - m_notification->width() / 2);
+        y = (int)(currentScreen->geometry().y() + currentScreen->geometry().height() / 2
+            - m_notification->height() / 2 + offsetY);
     }
 
     x -= sc_dropShadowSize;
@@ -1851,7 +1849,7 @@ void Toast::updatePositionXY()
     QPropertyAnimation* posAnimation = new QPropertyAnimation(this, "pos");
     posAnimation->setEndValue(position);
     posAnimation->setDuration(sc_updatePositionDuration);
-    posAnimation->start();
+    posAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void Toast::updatePositionX()
@@ -1873,7 +1871,7 @@ void Toast::updatePositionY()
     QPropertyAnimation* posAnimation = new QPropertyAnimation(this, "pos");
     posAnimation->setEndValue(QPoint(x(), position.y()));
     posAnimation->setDuration(sc_updatePositionDuration);
-    posAnimation->start();
+    posAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void Toast::updateStylesheet()
@@ -1922,10 +1920,8 @@ QImage Toast::recolorImage(QImage image, QColor color)
             QColor currentColor = image.pixelColor(x, y);
 
             // Replace the rgb values with rgb of new color and keep alpha the same
-            int newColorR = color.red();
-            int newColorG = color.green();
-            int newColorB = color.blue();
-            QColor newColor = QColor::fromRgba(qRgba(newColorR, newColorG, newColorB, currentColor.alpha()));
+            QColor newColor = QColor::fromRgba(qRgba(color.red(), color.green(),
+                color.blue(), currentColor.alpha()));
             image.setPixelColor(x, y, newColor);
         }
     }
@@ -1979,4 +1975,10 @@ void Toast::updateCurrentlyShowingPositionY()
     {
         toast->updatePositionY();
     }
+}
+
+void Toast::deleteAndShowNextInQueue()
+{
+    showNextInQueue();
+    deleteLater();
 }

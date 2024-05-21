@@ -7,9 +7,9 @@
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
-
-    Window window;
-    window.show();
-
-    return a.exec();
+    Window* window = new Window();
+    window->show();
+    int r = a.exec();
+    delete window;
+    return r;
 }
