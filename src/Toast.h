@@ -10,6 +10,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <QtCore/QPropertyAnimation>
+#include <QtCore/QFileInfo>
 #include "Enums.h"
 
 
@@ -233,6 +234,7 @@ private:
     void updateStylesheet();
     QPoint calculatePosition();
     Toast* getPredecessorToast();
+    static QString getCurrentDirectory();
     static QImage recolorImage(QImage image, QColor color);
     static QPixmap getIconFromEnum(ToastIcon enumIcon);
     static void updateCurrentlyShowingPositionXY();

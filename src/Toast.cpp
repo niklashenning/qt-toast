@@ -164,7 +164,7 @@ Toast::Toast(QWidget* parent)
     connect(m_durationBarTimer, SIGNAL(timeout()), this, SLOT(updateDurationBar()));
 
     // Apply stylesheet
-    QFile file("./src/css/toast.css");
+    QFile file(getCurrentDirectory() + "/css/toast.css");
     file.open(QFile::ReadOnly);
     setStyleSheet(file.readAll());
 }
@@ -1911,6 +1911,11 @@ Toast* Toast::getPredecessorToast()
     return predecessorToast;
 }
 
+QString Toast::getCurrentDirectory()
+{
+    return QFileInfo(__FILE__).absolutePath();
+}
+
 QImage Toast::recolorImage(QImage image, QColor color)
 {
     // Loop through every pixel
@@ -1930,25 +1935,27 @@ QImage Toast::recolorImage(QImage image, QColor color)
 
 QPixmap Toast::getIconFromEnum(ToastIcon enumIcon)
 {
+    QString currentDirectiory = getCurrentDirectory();
+
     if (enumIcon == ToastIcon::SUCCESS)
     {
-        return QPixmap("./src/icons/success.png");
+        return QPixmap(currentDirectiory + "/icons/success.png");
     }
     else if (enumIcon == ToastIcon::WARNING)
     {
-        return QPixmap("./src/icons/warning.png");
+        return QPixmap(currentDirectiory + "/icons/warning.png");
     }
     else if (enumIcon == ToastIcon::ERROR)
     {
-        return QPixmap("./src/icons/error.png");
+        return QPixmap(currentDirectiory + "/icons/error.png");
     }
     else if (enumIcon == ToastIcon::INFORMATION)
     {
-        return QPixmap("./src/icons/information.png");
+        return QPixmap(currentDirectiory + "/icons/information.png");
     }
     else if (enumIcon == ToastIcon::CLOSE)
     {
-        return QPixmap("./src/icons/close.png");
+        return QPixmap(currentDirectiory + "/icons/close.png");
     }
     return QPixmap();
 }
