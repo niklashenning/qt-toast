@@ -213,6 +213,21 @@ ToastPosition Toast::getPosition()
     return s_position;
 }
 
+int Toast::getCount()
+{
+    return s_currentlyShown.size() + s_queue.size();
+}
+
+int Toast::getVisibleCount()
+{
+    return s_currentlyShown.size();
+}
+
+int Toast::getQueuedCount()
+{
+    return s_queue.size();
+}
+
 int Toast::getDuration()
 {
     return m_duration;
@@ -391,21 +406,6 @@ QMargins Toast::getCloseButtonMargins()
 int Toast::getTextSectionSpacing()
 {
     return m_textSectionSpacing;
-}
-
-int Toast::getCount()
-{
-    return s_currentlyShown.size() + s_queue.size();
-}
-
-int Toast::getVisibleCount()
-{
-    return s_currentlyShown.size();
-}
-
-int Toast::getQueuedCount()
-{
-    return s_queue.size();
 }
 
 void Toast::setMaximumOnScreen(int maximum)

@@ -30,6 +30,9 @@ public:
     static bool isAlwaysOnMainScreen();
     static QScreen* getFixedScreen();
     static ToastPosition getPosition();
+    static int getCount();
+    static int getVisibleCount();
+    static int getQueuedCount();
     int getDuration();
     bool isShowDurationBar();
     QString getTitle();
@@ -66,9 +69,6 @@ public:
     QMargins getTextSectionMargins();
     QMargins getCloseButtonMargins();
     int getTextSectionSpacing();
-    int getCount();
-    int getVisibleCount();
-    int getQueuedCount();
 
     static void setMaximumOnScreen(int maximum);
     static void setSpacing(int spacing);
